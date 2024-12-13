@@ -2,6 +2,7 @@ package note
 
 import (
 	"fmt"
+
 	"github.com/cholick/midi-cli/internal/ui"
 	"github.com/cholick/midi-cli/pkg/midi"
 	"github.com/spf13/cobra"

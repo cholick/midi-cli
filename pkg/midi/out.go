@@ -95,10 +95,10 @@ func (o *out) NoteOn(noteName string, velocity, channel int) error {
 		return err
 	}
 
-	//todo: channel
-
+	//1000nnnn, nnnn = 0-15 for channels 1-16
+	status := byte(0b10010000 + channel - 1)
 	err = o.midiOut.SendMessage([]byte{
-		0x90,
+		status,
 		byte(num),
 		byte(velocity),
 	})
@@ -115,10 +115,10 @@ func (o *out) NoteOff(noteName string, velocity, channel int) error {
 		return err
 	}
 
-	//todo: channel
-
+	//1001nnnn, nnnn = 0-15 for channels 1-16
+	status := byte(0b10000000 + channel - 1)
 	err = o.midiOut.SendMessage([]byte{
-		0x80,
+		status,
 		byte(num),
 		byte(velocity),
 	})

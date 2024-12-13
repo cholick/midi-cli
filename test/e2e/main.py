@@ -41,14 +41,31 @@ class TestE2E(unittest.TestCase):
         self.assertEqual(0, result.returncode)
         self.assertIn(self.port_name, decode(result.stdout))
 
-    def test_send_note(self):
-
-        # go run ./cmd/midi-cli/main.go -v note on -n c4  --port midi-integration-test
-
+    def test_send_note_defaults(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         go_path = os.path.join(dir_path, "..", "..")
         result = subprocess.run(
-            f"go run cmd/midi-cli/main.go note on -n c4 -o 121 --port {self.port_name}",
+            f"go run cmd/midi-cli/main.go note on -n c4 --port {self.port_name}",
+            shell=True, capture_output=True, cwd=go_path,
+        )
+
+        if result.returncode != 0:
+            print("Command stdout")
+            print(decode(result.stdout))
+            print("Command stderr")
+            print(decode(result.stderr))
+
+        self.assertEqual(1, len(self.messages))
+        self.assertEqual('note_on', self.messages[0].type)
+        self.assertEqual(127, self.messages[0].velocity)
+        self.assertEqual(0, self.messages[0].channel)
+        self.assertEqual("C4", pretty_midi.note_number_to_name(self.messages[0].note))
+
+    def test_send_note(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        go_path = os.path.join(dir_path, "..", "..")
+        result = subprocess.run(
+            f"go run cmd/midi-cli/main.go note on -n d4 -o 121 -c 4 --port {self.port_name}",
             shell=True, capture_output=True, cwd=go_path,
         )
 
@@ -61,7 +78,8 @@ class TestE2E(unittest.TestCase):
         self.assertEqual(1, len(self.messages))
         self.assertEqual('note_on', self.messages[0].type)
         self.assertEqual(121, self.messages[0].velocity)
-        self.assertEqual("C4", pretty_midi.note_number_to_name(self.messages[0].note))
+        self.assertEqual(3, self.messages[0].channel)
+        self.assertEqual("D4", pretty_midi.note_number_to_name(self.messages[0].note))
 
 
 def decode(data: bytes):
