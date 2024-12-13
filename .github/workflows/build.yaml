@@ -17,6 +17,7 @@ jobs:
 
       - name: Build
         run: |
+          sudo apt-get install libasound2-dev
           make build
 
       - name: Test
@@ -25,6 +26,9 @@ jobs:
           make vet
 
   e2e_test:
+    # I tried for quite a while to get this working on Ubuntu (both VM and docker), but all the alsa
+    # stuff that makes midi work on Linux isn't in the runners. snd-virmidi, snd-dummy,
+    # snd-aloop, snd-seq, etc. are all unavailable
     runs-on: macos-latest
     name: build
     steps:
@@ -33,6 +37,7 @@ jobs:
 
       - name: E2E Test
         run: |
-          pip install requirements.txt
+          cd test/e2e/
+          pip install -r requirements.txt
 
-          python test/e2e/main.py &
+          python main.py &
