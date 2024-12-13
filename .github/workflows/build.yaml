@@ -1,0 +1,38 @@
+name: Test
+
+on:
+#  push:
+  workflow_dispatch: { }
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup GO
+        uses: actions/setup-go@v5
+
+      - name: Build
+        run: |
+          make build
+
+      - name: Test
+        run: |
+          make test
+          make vet
+
+  e2e_test:
+    runs-on: macos-latest
+    name: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: E2E Test
+        run: |
+          pip install requirements.txt
+
+          python test/e2e/main.py &
