@@ -6,10 +6,11 @@ import (
 	"github.com/cholick/midi-cli/internal/cli/note"
 	"github.com/cholick/midi-cli/internal/cli/port"
 	"github.com/cholick/midi-cli/internal/ui"
+	"github.com/cholick/midi-cli/pkg/midi"
 	"github.com/spf13/cobra"
 )
 
-func NewRootCommand() (*cobra.Command, error) {
+func NewRootCommand(opener midi.Opener) (*cobra.Command, error) {
 	var verbose bool
 	con := ui.NewOutput(os.Stdout, os.Stderr)
 
@@ -32,12 +33,12 @@ func NewRootCommand() (*cobra.Command, error) {
 	root.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 
 	portCmd := port.NewPortCommand()
-	portCmd.AddCommand(port.NewListCommand(con))
+	portCmd.AddCommand(port.NewListCommand(opener, con))
 	root.AddCommand(portCmd)
 
 	noteCmd := note.NewNoteCommand()
-	noteCmd.AddCommand(note.NewOnCommand(con))
-	noteCmd.AddCommand(note.NewOffCommand(con))
+	noteCmd.AddCommand(note.NewOnCommand(opener, con))
+	noteCmd.AddCommand(note.NewOffCommand(opener, con))
 	root.AddCommand(noteCmd)
 
 	return root, nil

@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewOnCommand(con ui.Console) *cobra.Command {
+func NewOnCommand(opener midi.Opener, con ui.Console) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "on",
 		Short: "Send note on",
@@ -19,7 +19,7 @@ func NewOnCommand(con ui.Console) *cobra.Command {
 			}
 			con.Debugf("Note on %v at %v on %v", fv.Note, fv.Velocity, fv.Channel)
 
-			out, err := midi.NewOutForPort(fv.Port)
+			out, err := opener.NewOutForPort(fv.Port)
 			if err != nil {
 				return fmt.Errorf("error opening MIDI out: %w", err)
 			}

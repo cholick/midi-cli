@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cholick/midi-cli/internal/rtmidi"
+	"github.com/cholick/midi-cli/pkg/rtmidi"
 	"github.com/samber/lo"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . Out
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ../../internal/midifakes/fake_out.go . Out
 type Out interface {
 	ListPorts() ([]string, error)
 	OpenPort(name string) error
@@ -17,30 +17,6 @@ type Out interface {
 	NoteOff(noteName string, velocity, channel int) error
 
 	Close()
-}
-
-func NewOut() (Out, error) {
-	o, err := rtmidi.NewMIDIOutDefault()
-	if err != nil {
-		return nil, fmt.Errorf("error opening default out: %w", err)
-	}
-	return &out{
-		midiOut: o,
-	}, nil
-}
-
-func NewOutForPort(port string) (Out, error) {
-	midiOut, err := NewOut()
-	if err != nil {
-		return nil, err
-	}
-
-	err = midiOut.OpenPort(port)
-	if err != nil {
-		return nil, fmt.Errorf("error opening port: %w", err)
-	}
-
-	return midiOut, nil
 }
 
 type out struct {

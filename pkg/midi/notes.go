@@ -42,8 +42,7 @@ func NoteNumberFromName(noteName string) (int, error) {
 	if len(noteName) == 0 {
 		return -1, errors.New("noteName not provided")
 	}
-	strings.ReplaceAll(noteName, "♭", "b")
-
+	noteName = strings.ReplaceAll(noteName, "♭", "b")
 	noteName = strings.ToUpper(noteName[:1]) + strings.ToLower(noteName[1:])
 
 	num, ok := midiNotes[noteName]

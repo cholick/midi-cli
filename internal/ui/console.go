@@ -69,7 +69,7 @@ func (c *console) Error(v ...any) {
 }
 
 func (c *console) Errorf(format string, v ...any) {
-	c.withNewlineF(c.out, format, v...)
+	c.withNewlineF(c.errOut, format, v...)
 }
 
 func (c *console) withNewline(w io.Writer, items ...any) {

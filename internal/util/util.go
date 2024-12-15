@@ -2,7 +2,7 @@ package util
 
 import "github.com/spf13/cobra"
 
-// Sigh; I consider a package named "util" a code smell, but leaving these here for now...
+// todo: Sigh; I consider a package named "util" a code smell, but leaving these here for now...
 // todo: Pull these out once a structure makes sense
 
 // Annoying this is needed... https://github.com/spf13/cobra/issues/216
