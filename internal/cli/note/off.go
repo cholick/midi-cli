@@ -13,7 +13,7 @@ func NewOffCommand(opener midi.Opener, con ui.Console) *cobra.Command {
 		Use:   "off",
 		Short: "Send note off",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fv, err := getFlagValues(cmd)
+			fv, err := getNoteFlagValues(cmd)
 			if err != nil {
 				return err
 			}

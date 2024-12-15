@@ -1,34 +1,33 @@
-package note_test
+package pc_test
 
 import (
 	"bytes"
 	"flag"
 	"testing"
 
-	"github.com/cholick/midi-cli/internal/cli/note"
+	"github.com/cholick/midi-cli/internal/cli/pc"
 	"github.com/cholick/midi-cli/internal/midifakes"
 	"github.com/cholick/midi-cli/internal/ui"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestNotOn(t *testing.T) {
+func TestProgramChange(t *testing.T) {
 	stdOut := &bytes.Buffer{}
 	stdErr := &bytes.Buffer{}
-
-	cmd := note.NewNoteCommand()
-	cmd.SetOut(stdOut)
-	cmd.SetErr(stdErr)
 
 	fakeOut := &midifakes.FakeOut{}
 	fakeOpener := &midifakes.FakeOpener{}
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
 	out := ui.NewOutput(stdOut, stdErr)
 
-	cmd.AddCommand(note.NewOnCommand(fakeOpener, out))
+	cmd := pc.NewPCCommand(fakeOpener, out)
+
+	cmd.SetOut(stdOut)
+	cmd.SetErr(stdErr)
 
 	cmd.SetArgs([]string{
-		"on", "--port", "testPort", "--note", "A4", "-o", "123", "-c", "14"},
+		"--port", "testPort", "--number", "4", "--channel", "9"},
 	)
 	flag.Parse()
 
@@ -38,10 +37,9 @@ func TestNotOn(t *testing.T) {
 
 	err := cmd.Execute()
 	require.NoError(t, err)
-	require.Equal(t, 1, fakeOut.NoteOnCallCount())
+	require.Equal(t, 1, fakeOut.ProgramChangeCallCount())
 
-	noteName, velocity, channel := fakeOut.NoteOnArgsForCall(0)
-	assert.Equal(t, "A4", noteName)
-	assert.Equal(t, 123, velocity)
-	assert.Equal(t, 14, channel)
+	num, channel := fakeOut.ProgramChangeArgsForCall(0)
+	assert.Equal(t, 4, num)
+	assert.Equal(t, 9, channel)
 }

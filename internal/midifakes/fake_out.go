@@ -61,6 +61,18 @@ type FakeOut struct {
 	openPortReturnsOnCall map[int]struct {
 		result1 error
 	}
+	ProgramChangeStub        func(int, int) error
+	programChangeMutex       sync.RWMutex
+	programChangeArgsForCall []struct {
+		arg1 int
+		arg2 int
+	}
+	programChangeReturns struct {
+		result1 error
+	}
+	programChangeReturnsOnCall map[int]struct {
+		result1 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -332,6 +344,68 @@ func (fake *FakeOut) OpenPortReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeOut) ProgramChange(arg1 int, arg2 int) error {
+	fake.programChangeMutex.Lock()
+	ret, specificReturn := fake.programChangeReturnsOnCall[len(fake.programChangeArgsForCall)]
+	fake.programChangeArgsForCall = append(fake.programChangeArgsForCall, struct {
+		arg1 int
+		arg2 int
+	}{arg1, arg2})
+	stub := fake.ProgramChangeStub
+	fakeReturns := fake.programChangeReturns
+	fake.recordInvocation("ProgramChange", []interface{}{arg1, arg2})
+	fake.programChangeMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeOut) ProgramChangeCallCount() int {
+	fake.programChangeMutex.RLock()
+	defer fake.programChangeMutex.RUnlock()
+	return len(fake.programChangeArgsForCall)
+}
+
+func (fake *FakeOut) ProgramChangeCalls(stub func(int, int) error) {
+	fake.programChangeMutex.Lock()
+	defer fake.programChangeMutex.Unlock()
+	fake.ProgramChangeStub = stub
+}
+
+func (fake *FakeOut) ProgramChangeArgsForCall(i int) (int, int) {
+	fake.programChangeMutex.RLock()
+	defer fake.programChangeMutex.RUnlock()
+	argsForCall := fake.programChangeArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeOut) ProgramChangeReturns(result1 error) {
+	fake.programChangeMutex.Lock()
+	defer fake.programChangeMutex.Unlock()
+	fake.ProgramChangeStub = nil
+	fake.programChangeReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeOut) ProgramChangeReturnsOnCall(i int, result1 error) {
+	fake.programChangeMutex.Lock()
+	defer fake.programChangeMutex.Unlock()
+	fake.ProgramChangeStub = nil
+	if fake.programChangeReturnsOnCall == nil {
+		fake.programChangeReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.programChangeReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeOut) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -345,6 +419,8 @@ func (fake *FakeOut) Invocations() map[string][][]interface{} {
 	defer fake.noteOnMutex.RUnlock()
 	fake.openPortMutex.RLock()
 	defer fake.openPortMutex.RUnlock()
+	fake.programChangeMutex.RLock()
+	defer fake.programChangeMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

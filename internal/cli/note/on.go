@@ -13,7 +13,7 @@ func NewOnCommand(opener midi.Opener, con ui.Console) *cobra.Command {
 		Use:   "on",
 		Short: "Send note on",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fv, err := getFlagValues(cmd)
+			fv, err := getNoteFlagValues(cmd)
 			if err != nil {
 				return err
 			}

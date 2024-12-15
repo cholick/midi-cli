@@ -3,6 +3,7 @@ package note
 import (
 	"fmt"
 
+	"github.com/cholick/midi-cli/internal/cli/base"
 	"github.com/cholick/midi-cli/internal/util"
 	"github.com/cholick/midi-cli/pkg/midi"
 	"github.com/spf13/cobra"
@@ -18,7 +19,7 @@ func NewNoteCommand() *cobra.Command {
 				return err
 			}
 
-			fv, err := getFlagValues(cmd)
+			fv, err := getNoteFlagValues(cmd)
 			if err != nil {
 				return err
 			}
@@ -32,6 +33,7 @@ func NewNoteCommand() *cobra.Command {
 				return fmt.Errorf("velocity must be 0-127 (inclusive)")
 			}
 
+			//todo: move common validation to make re-usable
 			if fv.Channel < 1 || fv.Channel > 16 {
 				return fmt.Errorf("channel must be be 1-16 (inclusive)")
 			}
@@ -40,32 +42,27 @@ func NewNoteCommand() *cobra.Command {
 		},
 	}
 
+	//todo: move common flags (port, channel) to make re-usable
 	cmd.PersistentFlags().StringP("port", "p", "", "Port to send message")
+	cmd.PersistentFlags().IntP("channel", "c", 1, "MIDI channel")
 	cmd.PersistentFlags().StringP("note", "n", "c4", "Note name (eg c4, C4, C#4, d♭4, or Db4)")
 	cmd.PersistentFlags().IntP("velocity", "o", 127, "Note velocity")
-	cmd.PersistentFlags().IntP("channel", "c", 1, "MIDI channel (1-16)")
 
 	_ = cmd.MarkPersistentFlagRequired("port")
 
 	return cmd
 }
 
-type flagValues struct {
+type flagNoteValues struct {
+	*base.FlagValues
 	Note     string
-	Port     string
 	Velocity int
-	Channel  int
 }
 
-func getFlagValues(cmd *cobra.Command) (*flagValues, error) {
-	port, err := cmd.Flags().GetString("port")
+func getNoteFlagValues(cmd *cobra.Command) (*flagNoteValues, error) {
+	bfv, err := base.GetFlagValues(cmd)
 	if err != nil {
-		return nil, fmt.Errorf("error getting port flag: %w", err)
-	}
-
-	velocity, err := cmd.Flags().GetInt("velocity")
-	if err != nil {
-		return nil, fmt.Errorf("error getting velocity flag: %w", err)
+		return nil, err
 	}
 
 	note, err := cmd.Flags().GetString("note")
@@ -73,15 +70,14 @@ func getFlagValues(cmd *cobra.Command) (*flagValues, error) {
 		return nil, fmt.Errorf("error getting note flag: %w", err)
 	}
 
-	channel, err := cmd.Flags().GetInt("channel")
+	velocity, err := cmd.Flags().GetInt("velocity")
 	if err != nil {
-		return nil, fmt.Errorf("error getting note flag: %w", err)
+		return nil, fmt.Errorf("error getting velocity flag: %w", err)
 	}
 
-	return &flagValues{
-		Note:     note,
-		Port:     port,
-		Velocity: velocity,
-		Channel:  channel,
+	return &flagNoteValues{
+		FlagValues: bfv,
+		Note:       note,
+		Velocity:   velocity,
 	}, nil
 }

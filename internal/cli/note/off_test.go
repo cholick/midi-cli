@@ -38,8 +38,7 @@ func TestNotOff(t *testing.T) {
 
 	err := cmd.Execute()
 	require.NoError(t, err)
-
-	assert.Equal(t, 1, fakeOut.NoteOffCallCount())
+	require.Equal(t, 1, fakeOut.NoteOffCallCount())
 
 	noteName, velocity, channel := fakeOut.NoteOffArgsForCall(0)
 	assert.Equal(t, "E4", noteName)

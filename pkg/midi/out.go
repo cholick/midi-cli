@@ -15,6 +15,7 @@ type Out interface {
 
 	NoteOn(noteName string, velocity, channel int) error
 	NoteOff(noteName string, velocity, channel int) error
+	ProgramChange(programNumber int, channel int) error
 
 	Close()
 }
@@ -71,7 +72,9 @@ func (o *out) NoteOn(noteName string, velocity, channel int) error {
 		return err
 	}
 
-	//1000nnnn, nnnn = 0-15 for channels 1-16
+	// status byte: 1000nnnn, nnnn = 0-15 for channels 1-16
+	// data byte 1: 0kkkkkkk note
+	// data byte 2: 0vvvvvvv velocity
 	status := byte(0b10010000 + channel - 1)
 	err = o.midiOut.SendMessage([]byte{
 		status,
@@ -79,7 +82,7 @@ func (o *out) NoteOn(noteName string, velocity, channel int) error {
 		byte(velocity),
 	})
 	if err != nil {
-		return fmt.Errorf("error sending note on message: %w", err)
+		return fmt.Errorf("error sending note 'on' message: %w", err)
 	}
 
 	return nil
@@ -91,7 +94,9 @@ func (o *out) NoteOff(noteName string, velocity, channel int) error {
 		return err
 	}
 
-	//1001nnnn, nnnn = 0-15 for channels 1-16
+	// status byte: 1001nnnn, nnnn = 0-15 for channels 1-16
+	// data byte 1: 0kkkkkkk note
+	// data byte 2: 0vvvvvvv velocity
 	status := byte(0b10000000 + channel - 1)
 	err = o.midiOut.SendMessage([]byte{
 		status,
@@ -99,7 +104,22 @@ func (o *out) NoteOff(noteName string, velocity, channel int) error {
 		byte(velocity),
 	})
 	if err != nil {
-		return fmt.Errorf("error sending note on message: %w", err)
+		return fmt.Errorf("error sending note 'off' message: %w", err)
+	}
+
+	return nil
+}
+
+func (o *out) ProgramChange(programNumber int, channel int) error {
+	// status byte: 1100nnnn, nnnn = 0-15 for channels 1-16
+	// data byte: 0ppppppp
+	status := byte(0b11000000 + channel - 1)
+	err := o.midiOut.SendMessage([]byte{
+		status,
+		byte(programNumber),
+	})
+	if err != nil {
+		return fmt.Errorf("error sending program change message: %w", err)
 	}
 
 	return nil
