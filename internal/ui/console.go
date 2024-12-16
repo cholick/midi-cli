@@ -3,7 +3,6 @@ package ui
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/samber/lo"
 )
@@ -25,10 +24,6 @@ type console struct {
 	out    io.Writer
 	errOut io.Writer
 	debug  bool
-}
-
-func NewOutputDefaultWriters() Console {
-	return NewOutput(os.Stdout, os.Stderr)
 }
 
 func NewOutput(out, errOut io.Writer) Console {

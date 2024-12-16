@@ -3,9 +3,7 @@ package cli
 import (
 	"os"
 
-	"github.com/cholick/midi-cli/internal/cli/cc"
 	"github.com/cholick/midi-cli/internal/cli/note"
-	"github.com/cholick/midi-cli/internal/cli/pc"
 	"github.com/cholick/midi-cli/internal/cli/port"
 	"github.com/cholick/midi-cli/internal/ui"
 	"github.com/cholick/midi-cli/pkg/midi"
@@ -43,10 +41,10 @@ func NewRootCommand(opener midi.Opener) (*cobra.Command, error) {
 	noteCmd.AddCommand(note.NewOffCommand(opener, con))
 	root.AddCommand(noteCmd)
 
-	pcCmd := pc.NewPCCommand(opener, con)
+	pcCmd := NewPCCommand(opener, con)
 	root.AddCommand(pcCmd)
 
-	ccCmd := cc.NewCCCommand(opener, con)
+	ccCmd := NewCCCommand(opener, con)
 	root.AddCommand(ccCmd)
 
 	return root, nil

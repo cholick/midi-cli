@@ -1,12 +1,11 @@
-package cc_test
+package cli_test
 
 import (
 	"bytes"
 	"flag"
 	"testing"
 
-	"github.com/cholick/midi-cli/internal/cli/cc"
-
+	"github.com/cholick/midi-cli/internal/cli"
 	"github.com/cholick/midi-cli/internal/midifakes"
 	"github.com/cholick/midi-cli/internal/ui"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +21,7 @@ func TestControlChange(t *testing.T) {
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
 	out := ui.NewOutput(stdOut, stdErr)
 
-	cmd := cc.NewCCCommand(fakeOpener, out)
+	cmd := cli.NewCCCommand(fakeOpener, out)
 
 	cmd.SetOut(stdOut)
 	cmd.SetErr(stdErr)
@@ -55,7 +54,7 @@ func TestControlChangeNumberValidation(t *testing.T) {
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
 	out := ui.NewOutput(stdOut, stdErr)
 
-	cmd := cc.NewCCCommand(fakeOpener, out)
+	cmd := cli.NewCCCommand(fakeOpener, out)
 
 	cmd.SetOut(stdOut)
 	cmd.SetErr(stdErr)
@@ -83,7 +82,7 @@ func TestControlChangeValueValidation(t *testing.T) {
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
 	out := ui.NewOutput(stdOut, stdErr)
 
-	cmd := cc.NewCCCommand(fakeOpener, out)
+	cmd := cli.NewCCCommand(fakeOpener, out)
 
 	cmd.SetOut(stdOut)
 	cmd.SetErr(stdErr)

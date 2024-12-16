@@ -1,11 +1,11 @@
-package pc_test
+package cli_test
 
 import (
 	"bytes"
 	"flag"
 	"testing"
 
-	"github.com/cholick/midi-cli/internal/cli/pc"
+	"github.com/cholick/midi-cli/internal/cli"
 	"github.com/cholick/midi-cli/internal/midifakes"
 	"github.com/cholick/midi-cli/internal/ui"
 	"github.com/stretchr/testify/assert"
@@ -21,7 +21,7 @@ func TestProgramChange(t *testing.T) {
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
 	out := ui.NewOutput(stdOut, stdErr)
 
-	cmd := pc.NewPCCommand(fakeOpener, out)
+	cmd := cli.NewPCCommand(fakeOpener, out)
 
 	cmd.SetOut(stdOut)
 	cmd.SetErr(stdErr)
@@ -53,7 +53,7 @@ func TestProgramChangeNumberValidation(t *testing.T) {
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
 	out := ui.NewOutput(stdOut, stdErr)
 
-	cmd := pc.NewPCCommand(fakeOpener, out)
+	cmd := cli.NewPCCommand(fakeOpener, out)
 
 	cmd.SetOut(stdOut)
 	cmd.SetErr(stdErr)

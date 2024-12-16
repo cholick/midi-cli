@@ -1,9 +1,9 @@
-package cc
+package cli
 
 import (
 	"fmt"
 
-	"github.com/cholick/midi-cli/internal/cli/base"
+	"github.com/cholick/midi-cli/internal/cli/common"
 	"github.com/cholick/midi-cli/internal/ui"
 	"github.com/cholick/midi-cli/internal/util"
 	"github.com/cholick/midi-cli/pkg/midi"
@@ -20,20 +20,10 @@ func NewCCCommand(opener midi.Opener, con ui.Console) *cobra.Command {
 				return err
 			}
 
-			fv, err := base.GetFlagValues(cmd)
-			if err != nil {
-				return err
-			}
-
-			// todo: move duplicated validation up to base
-			if fv.Channel < 1 || fv.Channel > 16 {
-				return fmt.Errorf("channel must be be 1-16 (inclusive)")
-			}
-
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fv, err := base.GetFlagValues(cmd)
+			fv, err := common.GetFlagValues(cmd)
 			if err != nil {
 				return err
 			}
@@ -71,13 +61,10 @@ func NewCCCommand(opener midi.Opener, con ui.Console) *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().StringP("port", "p", "", "Port to send message")
-	cmd.PersistentFlags().IntP("channel", "c", 1, "MIDI channel")
+	common.AddFlags(cmd)
 	cmd.PersistentFlags().IntP("number", "n", 0, "Controller number")
 	cmd.PersistentFlags().IntP("value", "l", 0, "Controller value")
 
-	_ = cmd.MarkPersistentFlagRequired("port")
-	_ = cmd.MarkPersistentFlagRequired("number")
 	_ = cmd.MarkPersistentFlagRequired("number")
 	_ = cmd.MarkPersistentFlagRequired("value")
 
