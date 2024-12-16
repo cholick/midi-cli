@@ -43,3 +43,31 @@ func TestProgramChange(t *testing.T) {
 	assert.Equal(t, 4, num)
 	assert.Equal(t, 9, channel)
 }
+
+func TestProgramChangeNumberValidation(t *testing.T) {
+	stdOut := &bytes.Buffer{}
+	stdErr := &bytes.Buffer{}
+
+	fakeOut := &midifakes.FakeOut{}
+	fakeOpener := &midifakes.FakeOpener{}
+	fakeOpener.NewOutForPortReturns(fakeOut, nil)
+	out := ui.NewOutput(stdOut, stdErr)
+
+	cmd := pc.NewPCCommand(fakeOpener, out)
+
+	cmd.SetOut(stdOut)
+	cmd.SetErr(stdErr)
+
+	cmd.SetArgs([]string{
+		"--port", "testPort", "--number", "-1"},
+	)
+	flag.Parse()
+
+	output := &bytes.Buffer{}
+	cmd.SetOut(output)
+	cmd.SetErr(output)
+
+	err := cmd.Execute()
+	require.Error(t, err)
+	require.ErrorContains(t, err, "number")
+}

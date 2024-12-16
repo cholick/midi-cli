@@ -15,7 +15,8 @@ type Out interface {
 
 	NoteOn(noteName string, velocity, channel int) error
 	NoteOff(noteName string, velocity, channel int) error
-	ProgramChange(programNumber int, channel int) error
+	ProgramChange(programNumber, channel int) error
+	ControlChange(controllerNumber, controllerValue, channel int) error
 
 	Close()
 }
@@ -117,6 +118,23 @@ func (o *out) ProgramChange(programNumber int, channel int) error {
 	err := o.midiOut.SendMessage([]byte{
 		status,
 		byte(programNumber),
+	})
+	if err != nil {
+		return fmt.Errorf("error sending program change message: %w", err)
+	}
+
+	return nil
+}
+
+func (o *out) ControlChange(controllerNumber int, controllerValue int, channel int) error {
+	// status byte: 1011nnnn, nnnn = 0-15 for channels 1-16
+	// data byte 1: 0ccccccc controller number
+	// data byte 2: 0vvvvvvv controller value
+	status := byte(0b10110000 + channel - 1)
+	err := o.midiOut.SendMessage([]byte{
+		status,
+		byte(controllerNumber),
+		byte(controllerValue),
 	})
 	if err != nil {
 		return fmt.Errorf("error sending program change message: %w", err)

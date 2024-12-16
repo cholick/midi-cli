@@ -12,6 +12,19 @@ type FakeOut struct {
 	closeMutex       sync.RWMutex
 	closeArgsForCall []struct {
 	}
+	ControlChangeStub        func(int, int, int) error
+	controlChangeMutex       sync.RWMutex
+	controlChangeArgsForCall []struct {
+		arg1 int
+		arg2 int
+		arg3 int
+	}
+	controlChangeReturns struct {
+		result1 error
+	}
+	controlChangeReturnsOnCall map[int]struct {
+		result1 error
+	}
 	ListPortsStub        func() ([]string, error)
 	listPortsMutex       sync.RWMutex
 	listPortsArgsForCall []struct {
@@ -99,6 +112,69 @@ func (fake *FakeOut) CloseCalls(stub func()) {
 	fake.closeMutex.Lock()
 	defer fake.closeMutex.Unlock()
 	fake.CloseStub = stub
+}
+
+func (fake *FakeOut) ControlChange(arg1 int, arg2 int, arg3 int) error {
+	fake.controlChangeMutex.Lock()
+	ret, specificReturn := fake.controlChangeReturnsOnCall[len(fake.controlChangeArgsForCall)]
+	fake.controlChangeArgsForCall = append(fake.controlChangeArgsForCall, struct {
+		arg1 int
+		arg2 int
+		arg3 int
+	}{arg1, arg2, arg3})
+	stub := fake.ControlChangeStub
+	fakeReturns := fake.controlChangeReturns
+	fake.recordInvocation("ControlChange", []interface{}{arg1, arg2, arg3})
+	fake.controlChangeMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeOut) ControlChangeCallCount() int {
+	fake.controlChangeMutex.RLock()
+	defer fake.controlChangeMutex.RUnlock()
+	return len(fake.controlChangeArgsForCall)
+}
+
+func (fake *FakeOut) ControlChangeCalls(stub func(int, int, int) error) {
+	fake.controlChangeMutex.Lock()
+	defer fake.controlChangeMutex.Unlock()
+	fake.ControlChangeStub = stub
+}
+
+func (fake *FakeOut) ControlChangeArgsForCall(i int) (int, int, int) {
+	fake.controlChangeMutex.RLock()
+	defer fake.controlChangeMutex.RUnlock()
+	argsForCall := fake.controlChangeArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeOut) ControlChangeReturns(result1 error) {
+	fake.controlChangeMutex.Lock()
+	defer fake.controlChangeMutex.Unlock()
+	fake.ControlChangeStub = nil
+	fake.controlChangeReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeOut) ControlChangeReturnsOnCall(i int, result1 error) {
+	fake.controlChangeMutex.Lock()
+	defer fake.controlChangeMutex.Unlock()
+	fake.ControlChangeStub = nil
+	if fake.controlChangeReturnsOnCall == nil {
+		fake.controlChangeReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.controlChangeReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeOut) ListPorts() ([]string, error) {
@@ -411,6 +487,8 @@ func (fake *FakeOut) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.closeMutex.RLock()
 	defer fake.closeMutex.RUnlock()
+	fake.controlChangeMutex.RLock()
+	defer fake.controlChangeMutex.RUnlock()
 	fake.listPortsMutex.RLock()
 	defer fake.listPortsMutex.RUnlock()
 	fake.noteOffMutex.RLock()
