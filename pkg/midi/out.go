@@ -1,6 +1,7 @@
 package midi
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -17,6 +18,9 @@ type Out interface {
 	NoteOff(noteName string, velocity, channel int) error
 	ProgramChange(programNumber, channel int) error
 	ControlChange(controllerNumber, controllerValue, channel int) error
+
+	PanicAll() error
+	Panic(channel int) error
 
 	Close()
 }
@@ -141,6 +145,21 @@ func (o *out) ControlChange(controllerNumber int, controllerValue int, channel i
 	}
 
 	return nil
+}
+
+func (o *out) PanicAll() error {
+	// For Panic, collect errors rather than immediately returning to silence as much as possible
+	errs := make([]error, 0)
+	for c := range 16 {
+		err := o.Panic(c + 1)
+		errs = append(errs, err)
+	}
+
+	return errors.Join(errs...)
+}
+
+func (o *out) Panic(channel int) error {
+	return o.ControlChange(120, 0, channel)
 }
 
 func (o *out) Close() {

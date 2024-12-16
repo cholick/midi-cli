@@ -28,10 +28,11 @@ class TestE2E(unittest.TestCase):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         go_path = os.path.join(dir_path, "..", "..")
         result = subprocess.run(
-            "go run cmd/midi-cli/main.go port list",
+            "go run cmd/midi-cli/main.go -v port list",
             shell=True, capture_output=True, cwd=go_path,
         )
 
+        # todo: is there a way to also print this on any assertion failure?
         if result.returncode != 0:
             print("Command stdout")
             print(decode(result.stdout))
@@ -45,7 +46,7 @@ class TestE2E(unittest.TestCase):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         go_path = os.path.join(dir_path, "..", "..")
         result = subprocess.run(
-            f"go run cmd/midi-cli/main.go note on -n c4 --port {self.port_name}",
+            f"go run cmd/midi-cli/main.go -v note on -n c4 --port {self.port_name}",
             shell=True, capture_output=True, cwd=go_path,
         )
 
@@ -65,7 +66,7 @@ class TestE2E(unittest.TestCase):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         go_path = os.path.join(dir_path, "..", "..")
         result = subprocess.run(
-            f"go run cmd/midi-cli/main.go note on -n d4 -o 121 -c 4 --port {self.port_name}",
+            f"go run cmd/midi-cli/main.go -v note on -n d4 -o 121 -c 4 --port {self.port_name}",
             shell=True, capture_output=True, cwd=go_path,
         )
 
@@ -85,7 +86,7 @@ class TestE2E(unittest.TestCase):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         go_path = os.path.join(dir_path, "..", "..")
         result = subprocess.run(
-            f"go run cmd/midi-cli/main.go pc -n 4 --port {self.port_name}",
+            f"go run cmd/midi-cli/main.go -v pc -n 4 --port {self.port_name}",
             shell=True, capture_output=True, cwd=go_path,
         )
 
@@ -103,7 +104,7 @@ class TestE2E(unittest.TestCase):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         go_path = os.path.join(dir_path, "..", "..")
         result = subprocess.run(
-            f"go run cmd/midi-cli/main.go cc -n 3 -l 33 --port {self.port_name}",
+            f"go run cmd/midi-cli/main.go -v cc -n 3 -l 33 --port {self.port_name}",
             shell=True, capture_output=True, cwd=go_path,
         )
 
@@ -117,6 +118,26 @@ class TestE2E(unittest.TestCase):
         self.assertEqual('control_change', self.messages[0].type)
         self.assertEqual(3, self.messages[0].control)
         self.assertEqual(33, self.messages[0].value)
+
+    def test_panic(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        go_path = os.path.join(dir_path, "..", "..")
+        result = subprocess.run(
+            f"go run cmd/midi-cli/main.go -v panic",
+            shell=True, capture_output=True, cwd=go_path,
+        )
+
+        if result.returncode != 0:
+            print("Command stdout")
+            print(decode(result.stdout))
+            print("Command stderr")
+            print(decode(result.stderr))
+
+        self.assertEqual(16, len(self.messages))
+        self.assertEqual('control_change', self.messages[0].type)
+        for message in self.messages:
+            self.assertEqual(120, message.control)
+            self.assertEqual(0, message.value)
 
 
 def decode(data: bytes):

@@ -74,6 +74,27 @@ type FakeOut struct {
 	openPortReturnsOnCall map[int]struct {
 		result1 error
 	}
+	PanicStub        func(int) error
+	panicMutex       sync.RWMutex
+	panicArgsForCall []struct {
+		arg1 int
+	}
+	panicReturns struct {
+		result1 error
+	}
+	panicReturnsOnCall map[int]struct {
+		result1 error
+	}
+	PanicAllStub        func() error
+	panicAllMutex       sync.RWMutex
+	panicAllArgsForCall []struct {
+	}
+	panicAllReturns struct {
+		result1 error
+	}
+	panicAllReturnsOnCall map[int]struct {
+		result1 error
+	}
 	ProgramChangeStub        func(int, int) error
 	programChangeMutex       sync.RWMutex
 	programChangeArgsForCall []struct {
@@ -420,6 +441,120 @@ func (fake *FakeOut) OpenPortReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
+func (fake *FakeOut) Panic(arg1 int) error {
+	fake.panicMutex.Lock()
+	ret, specificReturn := fake.panicReturnsOnCall[len(fake.panicArgsForCall)]
+	fake.panicArgsForCall = append(fake.panicArgsForCall, struct {
+		arg1 int
+	}{arg1})
+	stub := fake.PanicStub
+	fakeReturns := fake.panicReturns
+	fake.recordInvocation("Panic", []interface{}{arg1})
+	fake.panicMutex.Unlock()
+	if stub != nil {
+		return stub(arg1)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeOut) PanicCallCount() int {
+	fake.panicMutex.RLock()
+	defer fake.panicMutex.RUnlock()
+	return len(fake.panicArgsForCall)
+}
+
+func (fake *FakeOut) PanicCalls(stub func(int) error) {
+	fake.panicMutex.Lock()
+	defer fake.panicMutex.Unlock()
+	fake.PanicStub = stub
+}
+
+func (fake *FakeOut) PanicArgsForCall(i int) int {
+	fake.panicMutex.RLock()
+	defer fake.panicMutex.RUnlock()
+	argsForCall := fake.panicArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeOut) PanicReturns(result1 error) {
+	fake.panicMutex.Lock()
+	defer fake.panicMutex.Unlock()
+	fake.PanicStub = nil
+	fake.panicReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeOut) PanicReturnsOnCall(i int, result1 error) {
+	fake.panicMutex.Lock()
+	defer fake.panicMutex.Unlock()
+	fake.PanicStub = nil
+	if fake.panicReturnsOnCall == nil {
+		fake.panicReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.panicReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeOut) PanicAll() error {
+	fake.panicAllMutex.Lock()
+	ret, specificReturn := fake.panicAllReturnsOnCall[len(fake.panicAllArgsForCall)]
+	fake.panicAllArgsForCall = append(fake.panicAllArgsForCall, struct {
+	}{})
+	stub := fake.PanicAllStub
+	fakeReturns := fake.panicAllReturns
+	fake.recordInvocation("PanicAll", []interface{}{})
+	fake.panicAllMutex.Unlock()
+	if stub != nil {
+		return stub()
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	return fakeReturns.result1
+}
+
+func (fake *FakeOut) PanicAllCallCount() int {
+	fake.panicAllMutex.RLock()
+	defer fake.panicAllMutex.RUnlock()
+	return len(fake.panicAllArgsForCall)
+}
+
+func (fake *FakeOut) PanicAllCalls(stub func() error) {
+	fake.panicAllMutex.Lock()
+	defer fake.panicAllMutex.Unlock()
+	fake.PanicAllStub = stub
+}
+
+func (fake *FakeOut) PanicAllReturns(result1 error) {
+	fake.panicAllMutex.Lock()
+	defer fake.panicAllMutex.Unlock()
+	fake.PanicAllStub = nil
+	fake.panicAllReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeOut) PanicAllReturnsOnCall(i int, result1 error) {
+	fake.panicAllMutex.Lock()
+	defer fake.panicAllMutex.Unlock()
+	fake.PanicAllStub = nil
+	if fake.panicAllReturnsOnCall == nil {
+		fake.panicAllReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.panicAllReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
+}
+
 func (fake *FakeOut) ProgramChange(arg1 int, arg2 int) error {
 	fake.programChangeMutex.Lock()
 	ret, specificReturn := fake.programChangeReturnsOnCall[len(fake.programChangeArgsForCall)]
@@ -497,6 +632,10 @@ func (fake *FakeOut) Invocations() map[string][][]interface{} {
 	defer fake.noteOnMutex.RUnlock()
 	fake.openPortMutex.RLock()
 	defer fake.openPortMutex.RUnlock()
+	fake.panicMutex.RLock()
+	defer fake.panicMutex.RUnlock()
+	fake.panicAllMutex.RLock()
+	defer fake.panicAllMutex.RUnlock()
 	fake.programChangeMutex.RLock()
 	defer fake.programChangeMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
