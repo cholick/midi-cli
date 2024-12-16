@@ -22,7 +22,6 @@ func TestProgramChange(t *testing.T) {
 	out := ui.NewOutput(stdOut, stdErr)
 
 	cmd := cli.NewPCCommand(fakeOpener, out)
-
 	cmd.SetOut(stdOut)
 	cmd.SetErr(stdErr)
 
@@ -30,10 +29,6 @@ func TestProgramChange(t *testing.T) {
 		"--port", "testPort", "--number", "4", "--channel", "9"},
 	)
 	flag.Parse()
-
-	output := &bytes.Buffer{}
-	cmd.SetOut(output)
-	cmd.SetErr(output)
 
 	err := cmd.Execute()
 	require.NoError(t, err)
@@ -54,7 +49,6 @@ func TestProgramChangeNumberValidation(t *testing.T) {
 	out := ui.NewOutput(stdOut, stdErr)
 
 	cmd := cli.NewPCCommand(fakeOpener, out)
-
 	cmd.SetOut(stdOut)
 	cmd.SetErr(stdErr)
 
@@ -62,10 +56,6 @@ func TestProgramChangeNumberValidation(t *testing.T) {
 		"--port", "testPort", "--number", "-1"},
 	)
 	flag.Parse()
-
-	output := &bytes.Buffer{}
-	cmd.SetOut(output)
-	cmd.SetErr(output)
 
 	err := cmd.Execute()
 	require.Error(t, err)

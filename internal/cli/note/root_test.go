@@ -26,8 +26,8 @@ func TestValidateNote(t *testing.T) {
 	cmd.AddCommand(note.NewOnCommand(opener, out))
 
 	cmd.SetArgs([]string{
-		"on", "--port", "testPort", "--note", "H4"},
-	)
+		"on", "--port", "testPort", "--note", "H4",
+	})
 	flag.Parse()
 
 	err := cmd.Execute()
@@ -51,8 +51,8 @@ func TestValidateVelocity(t *testing.T) {
 	cmd.AddCommand(note.NewOnCommand(opener, out))
 
 	cmd.SetArgs([]string{
-		"on", "--port", "testPort", "--note", "C4", "-o", "-1"},
-	)
+		"on", "--port", "testPort", "--note", "C4", "-o", "-1",
+	})
 	flag.Parse()
 
 	err := cmd.Execute()
@@ -75,8 +75,8 @@ func TestValidateChannel(t *testing.T) {
 	cmd.AddCommand(note.NewOnCommand(opener, out))
 
 	cmd.SetArgs([]string{
-		"on", "--port", "testPort", "--note", "C4", "-c", "17"},
-	)
+		"on", "--port", "testPort", "--note", "C4", "-c", "17",
+	})
 	flag.Parse()
 
 	err := cmd.Execute()

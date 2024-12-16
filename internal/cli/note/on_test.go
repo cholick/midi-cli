@@ -28,13 +28,9 @@ func TestNotOn(t *testing.T) {
 	cmd.AddCommand(note.NewOnCommand(fakeOpener, out))
 
 	cmd.SetArgs([]string{
-		"on", "--port", "testPort", "--note", "A4", "-o", "123", "-c", "14"},
-	)
+		"on", "--port", "testPort", "--note", "A4", "-o", "123", "-c", "14",
+	})
 	flag.Parse()
-
-	output := &bytes.Buffer{}
-	cmd.SetOut(output)
-	cmd.SetErr(output)
 
 	err := cmd.Execute()
 	require.NoError(t, err)

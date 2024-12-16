@@ -22,18 +22,13 @@ func TestControlChange(t *testing.T) {
 	out := ui.NewOutput(stdOut, stdErr)
 
 	cmd := cli.NewCCCommand(fakeOpener, out)
-
 	cmd.SetOut(stdOut)
 	cmd.SetErr(stdErr)
 
 	cmd.SetArgs([]string{
-		"--port", "testPort", "--number", "2", "--value", "22", "--channel", "9"},
-	)
+		"--port", "testPort", "--number", "2", "--value", "22", "--channel", "9",
+	})
 	flag.Parse()
-
-	output := &bytes.Buffer{}
-	cmd.SetOut(output)
-	cmd.SetErr(output)
 
 	err := cmd.Execute()
 	require.NoError(t, err)
@@ -55,18 +50,13 @@ func TestControlChangeNumberValidation(t *testing.T) {
 	out := ui.NewOutput(stdOut, stdErr)
 
 	cmd := cli.NewCCCommand(fakeOpener, out)
-
 	cmd.SetOut(stdOut)
 	cmd.SetErr(stdErr)
 
 	cmd.SetArgs([]string{
-		"--port", "testPort", "--number", "130", "--value", "22", "--channel", "9"},
-	)
+		"--port", "testPort", "--number", "130", "--value", "22", "--channel", "9",
+	})
 	flag.Parse()
-
-	output := &bytes.Buffer{}
-	cmd.SetOut(output)
-	cmd.SetErr(output)
 
 	err := cmd.Execute()
 	require.Error(t, err)
@@ -83,18 +73,13 @@ func TestControlChangeValueValidation(t *testing.T) {
 	out := ui.NewOutput(stdOut, stdErr)
 
 	cmd := cli.NewCCCommand(fakeOpener, out)
-
 	cmd.SetOut(stdOut)
 	cmd.SetErr(stdErr)
 
 	cmd.SetArgs([]string{
-		"--port", "testPort", "--number", "2", "--value", "2222", "--channel", "9"},
-	)
+		"--port", "testPort", "--number", "2", "--value", "2222", "--channel", "9",
+	})
 	flag.Parse()
-
-	output := &bytes.Buffer{}
-	cmd.SetOut(output)
-	cmd.SetErr(output)
 
 	err := cmd.Execute()
 	require.Error(t, err)
