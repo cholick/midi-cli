@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: build
+    name: Build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
     # stuff that makes midi work on Linux isn't in the runners. snd-virmidi, snd-dummy,
     # snd-aloop, snd-seq, etc. are all unavailable
     runs-on: macos-latest
-    name: build
+    name: E2E Test
     steps:
       - name: Checkout
         uses: actions/checkout@v4
