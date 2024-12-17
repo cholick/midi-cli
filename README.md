@@ -5,6 +5,9 @@ created this because I wanted to send program changes and a few other MIDI comma
 that as an excuse to do some MIDI work in Go (and get myself a bit more familiar with the messages for
 some hardware work).
 
+### Use
+
+
 ```shell
 $ midi-cli --help
 Send MIDI messages
@@ -27,8 +30,15 @@ Flags:
 Use "midi-cli [command] --help" for more information about a command.
 ```
 
+Example use that selects the third preset in the second playlist in Pigments (the choice
+of counting starting from 0 or 1 is implementation dependent, the cli starts at 0):
+```shell
+midi-cli cc --number 0 --value 1 --port midi-cli
+midi-cli pc --number 2 --port midi-cli
+```
+
 ### Setup
 
 See [detailed-setup.md](docs/detailed-setup.md) for some detailed setup instructions for a Mac. It amounts to
-making sure the build-in IAC driver is on in MIDI Studio, sending signals to that driver, and making sure the
+making sure the built-in IAC driver is on in MIDI Studio, sending signals to that driver, and making sure the
 stand-alone instrument / DAW is listening.
