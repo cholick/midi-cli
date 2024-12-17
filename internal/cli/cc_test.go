@@ -13,17 +13,15 @@ import (
 )
 
 func TestControlChange(t *testing.T) {
-	stdOut := &bytes.Buffer{}
-	stdErr := &bytes.Buffer{}
-
 	fakeOut := &midifakes.FakeOut{}
 	fakeOpener := &midifakes.FakeOpener{}
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
-	out := ui.NewOutput(stdOut, stdErr)
 
+	out := ui.NewOutputForTesting()
 	cmd := cli.NewCCCommand(fakeOpener, out)
-	cmd.SetOut(stdOut)
-	cmd.SetErr(stdErr)
+
+	cmd.SetOut(out.StdOut)
+	cmd.SetErr(out.ErrOut)
 
 	cmd.SetArgs([]string{
 		"--port", "testPort", "--number", "2", "--value", "22", "--channel", "9",

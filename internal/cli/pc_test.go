@@ -1,7 +1,6 @@
 package cli_test
 
 import (
-	"bytes"
 	"flag"
 	"testing"
 
@@ -13,17 +12,15 @@ import (
 )
 
 func TestProgramChange(t *testing.T) {
-	stdOut := &bytes.Buffer{}
-	stdErr := &bytes.Buffer{}
-
 	fakeOut := &midifakes.FakeOut{}
 	fakeOpener := &midifakes.FakeOpener{}
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
-	out := ui.NewOutput(stdOut, stdErr)
+
+	out := ui.NewOutputForTesting()
 
 	cmd := cli.NewPCCommand(fakeOpener, out)
-	cmd.SetOut(stdOut)
-	cmd.SetErr(stdErr)
+	cmd.SetOut(out.StdOut)
+	cmd.SetErr(out.ErrOut)
 
 	cmd.SetArgs([]string{
 		"--port", "testPort", "--number", "4", "--channel", "9"},
@@ -40,17 +37,15 @@ func TestProgramChange(t *testing.T) {
 }
 
 func TestProgramChangeNumberValidation(t *testing.T) {
-	stdOut := &bytes.Buffer{}
-	stdErr := &bytes.Buffer{}
-
 	fakeOut := &midifakes.FakeOut{}
 	fakeOpener := &midifakes.FakeOpener{}
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
-	out := ui.NewOutput(stdOut, stdErr)
+
+	out := ui.NewOutputForTesting()
 
 	cmd := cli.NewPCCommand(fakeOpener, out)
-	cmd.SetOut(stdOut)
-	cmd.SetErr(stdErr)
+	cmd.SetOut(out.StdOut)
+	cmd.SetErr(out.ErrOut)
 
 	cmd.SetArgs([]string{
 		"--port", "testPort", "--number", "-1"},

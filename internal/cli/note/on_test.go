@@ -1,7 +1,6 @@
 package note_test
 
 import (
-	"bytes"
 	"flag"
 	"testing"
 
@@ -13,17 +12,15 @@ import (
 )
 
 func TestNotOn(t *testing.T) {
-	stdOut := &bytes.Buffer{}
-	stdErr := &bytes.Buffer{}
-
 	cmd := note.NewNoteCommand()
-	cmd.SetOut(stdOut)
-	cmd.SetErr(stdErr)
+
+	out := ui.NewOutputForTesting()
+	cmd.SetOut(out.StdOut)
+	cmd.SetErr(out.ErrOut)
 
 	fakeOut := &midifakes.FakeOut{}
 	fakeOpener := &midifakes.FakeOpener{}
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
-	out := ui.NewOutput(stdOut, stdErr)
 
 	cmd.AddCommand(note.NewOnCommand(fakeOpener, out))
 

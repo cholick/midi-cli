@@ -1,7 +1,6 @@
 package cli_test
 
 import (
-	"bytes"
 	"errors"
 	"flag"
 	"testing"
@@ -14,19 +13,17 @@ import (
 )
 
 func TestPanic(t *testing.T) {
-	stdOut := &bytes.Buffer{}
-	stdErr := &bytes.Buffer{}
-
 	fakeOut := &midifakes.FakeOut{}
 	fakeOut.ListPortsReturns([]string{"device1", "device2"}, nil)
 	fakeOpener := &midifakes.FakeOpener{}
 	fakeOpener.NewOutForPortReturns(fakeOut, nil)
 	fakeOpener.NewDefaultOutReturns(fakeOut, nil)
-	out := ui.NewOutput(stdOut, stdErr)
+
+	out := ui.NewOutputForTesting()
 
 	cmd := cli.NewPanicCommand(fakeOpener, out)
-	cmd.SetOut(stdOut)
-	cmd.SetErr(stdErr)
+	cmd.SetOut(out.StdOut)
+	cmd.SetErr(out.ErrOut)
 
 	cmd.SetArgs([]string{})
 	flag.Parse()
@@ -41,9 +38,6 @@ func TestPanic(t *testing.T) {
 }
 
 func TestPanicCallsOtherDevicesAfterError(t *testing.T) {
-	stdOut := &bytes.Buffer{}
-	stdErr := &bytes.Buffer{}
-
 	fakeOut := &midifakes.FakeOut{}
 	fakeOut.ListPortsReturns([]string{"device1", "device2"}, nil)
 	fakeOpener := &midifakes.FakeOpener{}
@@ -51,11 +45,12 @@ func TestPanicCallsOtherDevicesAfterError(t *testing.T) {
 	fakeOpener.NewOutForPortReturnsOnCall(0, nil, errors.New("first device failed"))
 	fakeOpener.NewOutForPortReturnsOnCall(1, fakeOut, nil)
 	fakeOpener.NewDefaultOutReturns(fakeOut, nil)
-	out := ui.NewOutput(stdOut, stdErr)
+
+	out := ui.NewOutputForTesting()
 
 	cmd := cli.NewPanicCommand(fakeOpener, out)
-	cmd.SetOut(stdOut)
-	cmd.SetErr(stdErr)
+	cmd.SetOut(out.StdOut)
+	cmd.SetErr(out.ErrOut)
 
 	cmd.SetArgs([]string{})
 	flag.Parse()

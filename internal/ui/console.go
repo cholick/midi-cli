@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 
@@ -20,6 +21,13 @@ type Console interface {
 	Errorf(format string, v ...any)
 }
 
+type ConsoleForTesting struct {
+	Console
+
+	StdOut io.Writer
+	ErrOut io.Writer
+}
+
 type console struct {
 	out    io.Writer
 	errOut io.Writer
@@ -30,6 +38,17 @@ func NewOutput(out, errOut io.Writer) Console {
 	return &console{
 		out:    out,
 		errOut: errOut,
+	}
+}
+
+func NewOutputForTesting() *ConsoleForTesting {
+	stdOut := &bytes.Buffer{}
+	stdErr := &bytes.Buffer{}
+
+	return &ConsoleForTesting{
+		Console: NewOutput(stdOut, stdErr),
+		StdOut:  stdOut,
+		ErrOut:  stdErr,
 	}
 }
 
