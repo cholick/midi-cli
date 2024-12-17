@@ -43,4 +43,4 @@ jobs:
           cd test/e2e/
           pip install -r requirements.txt
 
-          python main.py &
+          python -m unittest main.py
