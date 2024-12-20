@@ -32,12 +32,7 @@ class TestE2E(unittest.TestCase):
             shell=True, capture_output=True, cwd=go_path,
         )
 
-        # todo: is there a way to also print this on any assertion failure?
-        if result.returncode != 0:
-            print("Command stdout")
-            print(decode(result.stdout))
-            print("Command stderr")
-            print(decode(result.stderr))
+        self.assertEqual(0, result.returncode)
 
         self.assertEqual(0, result.returncode)
         self.assertIn(self.port_name, decode(result.stdout))
@@ -50,11 +45,12 @@ class TestE2E(unittest.TestCase):
             shell=True, capture_output=True, cwd=go_path,
         )
 
-        if result.returncode != 0:
-            print("Command stdout")
-            print(decode(result.stdout))
-            print("Command stderr")
-            print(decode(result.stderr))
+        print("Command stdout")
+        print(decode(result.stdout))
+        print("Command stderr")
+        print(decode(result.stderr))
+
+        self.assertEqual(0, result.returncode)
 
         self.assertEqual(1, len(self.messages))
         self.assertEqual('note_on', self.messages[0].type)
@@ -70,11 +66,12 @@ class TestE2E(unittest.TestCase):
             shell=True, capture_output=True, cwd=go_path,
         )
 
-        if result.returncode != 0:
-            print("Command stdout")
-            print(decode(result.stdout))
-            print("Command stderr")
-            print(decode(result.stderr))
+        print("Command stdout")
+        print(decode(result.stdout))
+        print("Command stderr")
+        print(decode(result.stderr))
+
+        self.assertEqual(0, result.returncode)
 
         self.assertEqual(1, len(self.messages))
         self.assertEqual('note_on', self.messages[0].type)
@@ -90,11 +87,12 @@ class TestE2E(unittest.TestCase):
             shell=True, capture_output=True, cwd=go_path,
         )
 
-        if result.returncode != 0:
-            print("Command stdout")
-            print(decode(result.stdout))
-            print("Command stderr")
-            print(decode(result.stderr))
+        print("Command stdout")
+        print(decode(result.stdout))
+        print("Command stderr")
+        print(decode(result.stderr))
+
+        self.assertEqual(0, result.returncode)
 
         self.assertEqual(1, len(self.messages))
         self.assertEqual('program_change', self.messages[0].type)
@@ -108,11 +106,12 @@ class TestE2E(unittest.TestCase):
             shell=True, capture_output=True, cwd=go_path,
         )
 
-        if result.returncode != 0:
-            print("Command stdout")
-            print(decode(result.stdout))
-            print("Command stderr")
-            print(decode(result.stderr))
+        print("Command stdout")
+        print(decode(result.stdout))
+        print("Command stderr")
+        print(decode(result.stderr))
+
+        self.assertEqual(0, result.returncode)
 
         self.assertEqual(1, len(self.messages))
         self.assertEqual('control_change', self.messages[0].type)
@@ -127,11 +126,12 @@ class TestE2E(unittest.TestCase):
             shell=True, capture_output=True, cwd=go_path,
         )
 
-        # if result.returncode != 0:
         print("Command stdout")
         print(decode(result.stdout))
         print("Command stderr")
         print(decode(result.stderr))
+
+        self.assertEqual(0, result.returncode)
 
         self.assertEqual(1, len(self.messages))
         self.assertEqual('control_change', self.messages[0].type)
@@ -146,11 +146,12 @@ class TestE2E(unittest.TestCase):
             shell=True, capture_output=True, cwd=go_path,
         )
 
-        if result.returncode != 0:
-            print("Command stdout")
-            print(decode(result.stdout))
-            print("Command stderr")
-            print(decode(result.stderr))
+        print("Command stdout")
+        print(decode(result.stdout))
+        print("Command stderr")
+        print(decode(result.stderr))
+
+        self.assertEqual(0, result.returncode)
 
         self.assertEqual(16, len(self.messages))
         self.assertEqual('control_change', self.messages[0].type)
