@@ -127,11 +127,11 @@ class TestE2E(unittest.TestCase):
             shell=True, capture_output=True, cwd=go_path,
         )
 
-        if result.returncode != 0:
-            print("Command stdout")
-            print(decode(result.stdout))
-            print("Command stderr")
-            print(decode(result.stderr))
+        # if result.returncode != 0:
+        print("Command stdout")
+        print(decode(result.stdout))
+        print("Command stderr")
+        print(decode(result.stderr))
 
         self.assertEqual(1, len(self.messages))
         self.assertEqual('control_change', self.messages[0].type)
