@@ -16,6 +16,7 @@ Usage:
   midi-cli [command]
 
 Available Commands:
+  bs          Send bank select (cc 0) message
   cc          Send control change messages
   help        Help about any command
   note        Send note messages
@@ -26,14 +27,12 @@ Available Commands:
 Flags:
   -h, --help      help for midi-cli
   -v, --verbose   Verbose output
-
-Use "midi-cli [command] --help" for more information about a command.
 ```
 
 Example use that selects the third preset in the second playlist in Pigments (the choice
 of counting starting from 0 or 1 is implementation dependent, the cli starts at 0):
 ```shell
-midi-cli cc --number 0 --value 1 --port midi-cli
+midi-cli bs --value 1 --port midi-cli
 midi-cli pc --number 2 --port midi-cli
 ```
 

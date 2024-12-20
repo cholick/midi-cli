@@ -119,6 +119,25 @@ class TestE2E(unittest.TestCase):
         self.assertEqual(3, self.messages[0].control)
         self.assertEqual(33, self.messages[0].value)
 
+    def test_bank_select(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        go_path = os.path.join(dir_path, "..", "..")
+        result = subprocess.run(
+            f"go run cmd/midi-cli/main.go -v bs -l 2 --port {self.port_name}",
+            shell=True, capture_output=True, cwd=go_path,
+        )
+
+        if result.returncode != 0:
+            print("Command stdout")
+            print(decode(result.stdout))
+            print("Command stderr")
+            print(decode(result.stderr))
+
+        self.assertEqual(1, len(self.messages))
+        self.assertEqual('control_change', self.messages[0].type)
+        self.assertEqual(0, self.messages[0].control)
+        self.assertEqual(2, self.messages[0].value)
+
     def test_panic(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         go_path = os.path.join(dir_path, "..", "..")

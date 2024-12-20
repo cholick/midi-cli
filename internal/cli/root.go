@@ -47,6 +47,9 @@ func NewRootCommand(opener midi.Opener) (*cobra.Command, error) {
 	ccCmd := NewCCCommand(opener, con)
 	root.AddCommand(ccCmd)
 
+	bsCmd := NewBSCommand(opener, con)
+	root.AddCommand(bsCmd)
+
 	panicCmd := NewPanicCommand(opener, con)
 	root.AddCommand(panicCmd)
 
