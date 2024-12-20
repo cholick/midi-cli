@@ -8,7 +8,7 @@ some hardware work).
 ### Use
 
 
-```shell
+```text
 $ midi-cli --help
 Send MIDI messages
 
