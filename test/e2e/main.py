@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 import unittest
 
 import mido
@@ -38,13 +39,18 @@ class TestE2E(unittest.TestCase):
 
         return result
 
+    def wait_for_message(self, expected: int):
+        count = 0
+        if len(self.messages) < expected and count < 100:
+            time.sleep(.01)
+            count += 1
+
     def test_port_list(self):
         cmd = "go run cmd/midi-cli/main.go -v port list"
         result = self.run_go(cmd)
 
         self.assertEqual(0, result.returncode)
 
-        self.assertEqual(0, result.returncode)
         self.assertIn(self.port_name, decode(result.stdout))
 
     def test_send_note_defaults(self):
@@ -53,7 +59,9 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_message(1)
         self.assertEqual(1, len(self.messages))
+
         self.assertEqual('note_on', self.messages[0].type)
         self.assertEqual(127, self.messages[0].velocity)
         self.assertEqual(0, self.messages[0].channel)
@@ -65,7 +73,9 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_message(1)
         self.assertEqual(1, len(self.messages))
+
         self.assertEqual('note_on', self.messages[0].type)
         self.assertEqual(121, self.messages[0].velocity)
         self.assertEqual(3, self.messages[0].channel)
@@ -82,7 +92,9 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_message(1)
         self.assertEqual(1, len(self.messages))
+
         self.assertEqual('program_change', self.messages[0].type)
         self.assertEqual(4, self.messages[0].program)
 
@@ -97,7 +109,9 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_message(1)
         self.assertEqual(1, len(self.messages))
+
         self.assertEqual('control_change', self.messages[0].type)
         self.assertEqual(3, self.messages[0].control)
         self.assertEqual(33, self.messages[0].value)
@@ -113,7 +127,9 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_message(1)
         self.assertEqual(1, len(self.messages))
+
         self.assertEqual('control_change', self.messages[0].type)
         self.assertEqual(0, self.messages[0].control)
         self.assertEqual(2, self.messages[0].value)
@@ -129,7 +145,9 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_message(16)
         self.assertEqual(16, len(self.messages))
+
         self.assertEqual('control_change', self.messages[0].type)
         for message in self.messages:
             self.assertEqual(120, message.control)
