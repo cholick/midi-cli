@@ -7,6 +7,7 @@ import (
 	"github.com/cholick/midi-cli/internal/cli"
 	"github.com/cholick/midi-cli/internal/midifakes"
 	"github.com/cholick/midi-cli/internal/ui"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
