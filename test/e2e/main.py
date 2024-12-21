@@ -54,7 +54,7 @@ class TestE2E(unittest.TestCase):
         self.assertIn(self.port_name, decode(result.stdout))
 
     def test_send_note_defaults(self):
-        cmd = f"go run cmd/midi-cli/main.go -v note on -n c4 --port {self.port_name}"
+        cmd = f"MIDI_CLI_PORT={self.port_name} go run cmd/midi-cli/main.go -v note on -n c4"
         result = self.run_go(cmd)
 
         self.assertEqual(0, result.returncode)
