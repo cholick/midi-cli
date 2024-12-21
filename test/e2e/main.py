@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time
+import random
 import unittest
 
 import mido
@@ -11,7 +12,7 @@ import rtmidi
 class TestE2E(unittest.TestCase):
     def setUp(self):
         self.messages = []
-        self.port_name = "midi-integration-test"
+        self.port_name = f"midi-test-{random.SystemRandom().randint(0, 100000000)}"
 
         self.midi_in = rtmidi.MidiIn()
         self.midi_in.set_callback(self.midi_callback)
@@ -39,12 +40,6 @@ class TestE2E(unittest.TestCase):
 
         return result
 
-    def wait_for_message(self, expected: int):
-        count = 0
-        if len(self.messages) < expected and count < 100:
-            time.sleep(.01)
-            count += 1
-
     def test_port_list(self):
         cmd = "go run cmd/midi-cli/main.go -v port list"
         result = self.run_go(cmd)
@@ -54,12 +49,11 @@ class TestE2E(unittest.TestCase):
         self.assertIn(self.port_name, decode(result.stdout))
 
     def test_send_note_defaults(self):
-        cmd = f"go run cmd/midi-cli/main.go -v note on -n c4 --port {self.port_name}"
+        cmd = f"MIDI_CLI_PORT={self.port_name} go run cmd/midi-cli/main.go -v note on -n c4"
         result = self.run_go(cmd)
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_message(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('note_on', self.messages[0].type)
@@ -73,7 +67,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_message(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('note_on', self.messages[0].type)
@@ -92,7 +85,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_message(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('program_change', self.messages[0].type)
@@ -109,7 +101,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_message(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
@@ -127,7 +118,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_message(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
@@ -145,7 +135,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_message(16)
         self.assertEqual(16, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
