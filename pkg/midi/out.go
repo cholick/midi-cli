@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ../../internal/midifakes/fake_out.go . Out
+//go:generate go tool counterfeiter -o ../../internal/midifakes/fake_out.go . Out
 type Out interface {
 	ListPorts() ([]string, error)
 	OpenPort(name string) error

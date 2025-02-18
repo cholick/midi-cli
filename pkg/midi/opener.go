@@ -6,7 +6,7 @@ import (
 	"github.com/cholick/midi-cli/pkg/rtmidi"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o ../../internal/midifakes/fake_opener.go . Opener
+//go:generate go tool counterfeiter -o ../../internal/midifakes/fake_opener.go . Opener
 type Opener interface {
 	NewDefaultOut() (Out, error)
 	NewOutForPort(port string) (Out, error)
