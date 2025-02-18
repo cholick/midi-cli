@@ -18,7 +18,4 @@ vet:
 
 fmt:
 	gofmt -l -w -s .
-	goimports -l -w .
-
-install-tools:
-	@cat tools.go | grep _ | cut -f2 -d " " | xargs -tI % go install %
+	go tool goimports -l -w .
