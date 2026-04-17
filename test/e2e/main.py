@@ -40,6 +40,12 @@ class TestE2E(unittest.TestCase):
 
         return result
 
+    def wait_for_messages(self, expected: int):
+        count = 0
+        while len(self.messages) < expected and count < 100:
+            time.sleep(.01)
+            count += 1
+
     def test_port_list(self):
         cmd = "go run cmd/midi-cli/main.go -v port list"
         result = self.run_go(cmd)
@@ -54,6 +60,7 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_messages(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('note_on', self.messages[0].type)
@@ -67,6 +74,7 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_messages(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('note_on', self.messages[0].type)
@@ -85,6 +93,7 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_messages(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('program_change', self.messages[0].type)
@@ -101,6 +110,7 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_messages(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
@@ -118,6 +128,7 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_messages(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
@@ -135,6 +146,7 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
+        self.wait_for_messages(16)
         self.assertEqual(16, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
