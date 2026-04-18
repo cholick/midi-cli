@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/cholick/midi-cli/pkg/rtmidi"
 	"github.com/samber/lo"
@@ -163,6 +164,9 @@ func (o *out) Panic(channel int) error {
 }
 
 func (o *out) Close() {
+	// hammered at this a bit, but tests flaked without the sleep
+	// was never an issue on a faster machine, but worth leaving in
+	time.Sleep(100 * time.Millisecond)
 	_ = o.midiOut.Close()
 }
 
