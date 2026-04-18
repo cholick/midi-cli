@@ -31,7 +31,10 @@ class TestE2E(unittest.TestCase):
         go_path = os.path.join(dir_path, "..", "..")
 
         print(f"Running: {cmd}")
+        start = time.time()
         result = subprocess.run(cmd, shell=True, capture_output=True, cwd=go_path)
+        elapsed = time.time() - start
+        print(f"Subprocess completed in {elapsed:.3f}s")
 
         print("Command stdout")
         print(decode(result.stdout))
@@ -40,11 +43,13 @@ class TestE2E(unittest.TestCase):
 
         return result
 
-    def wait_for_messages(self, expected: int):
-        count = 0
-        while len(self.messages) < expected and count < 500:
+    def wait_for_messages(self, expected: int, timeout: float = 5.0):
+        start = time.time()
+        while len(self.messages) < expected:
+            if time.time() - start >= timeout:
+                break
             time.sleep(.01)
-            count += 1
+        print(f"wait_for_messages: expected={expected}, got={len(self.messages)}, waited={time.time() - start:.3f}s")
 
     def test_port_list(self):
         cmd = "go run cmd/midi-cli/main.go -v port list"
