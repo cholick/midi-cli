@@ -173,7 +173,7 @@ func (o *out) Panic(channel int) error {
 
 func (o *out) Close() {
 	// debugf("close delaying")
-	// time.Sleep(100 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 	debugf("close port=%q", o.portName)
 	_ = o.midiOut.Close()
 }

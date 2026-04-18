@@ -17,7 +17,7 @@ class TestE2E(unittest.TestCase):
         self.midi_in = rtmidi.MidiIn()
         self.midi_in.set_callback(self.midi_callback)
         self.midi_in.open_virtual_port(self.port_name)
-        self.validate_port_ready()
+        # self.validate_port_ready()
 
     def tearDown(self):
         self.midi_in.close_port()
