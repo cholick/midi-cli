@@ -165,6 +165,14 @@ class TestE2E(unittest.TestCase):
         self.assertEqual(0, result.returncode)
 
         self.wait_for_messages(16)
+        if len(self.messages) != 16:
+            print("----------------------")
+            print(f"panic: got {len(self.messages)} messages")
+            for index, message in enumerate(self.messages):
+                print(
+                    f"panic[{index}]: type={message.type} channel={message.channel + 1} "
+                    f"control={getattr(message, 'control', None)} value={getattr(message, 'value', None)}"
+                )
         self.assertEqual(16, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
