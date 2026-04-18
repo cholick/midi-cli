@@ -3,7 +3,6 @@ package midi
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
@@ -28,8 +27,7 @@ type Out interface {
 }
 
 type out struct {
-	midiOut  rtmidi.MIDIOut
-	portName string
+	midiOut rtmidi.MIDIOut
 }
 
 func (o *out) ListPorts() ([]string, error) {
@@ -50,13 +48,10 @@ func (o *out) OpenPort(name string) error {
 	//exact match
 	for key, val := range ports {
 		if key == name {
-			debugf("open exact match requested=%q index=%d", name, val)
 			err := o.midiOut.OpenPort(val, "midi-cli")
 			if err != nil {
 				return fmt.Errorf("error opening port %s (%v)", name, val)
 			}
-			o.portName = key
-			debugf("open success port=%q index=%d", key, val)
 			return nil
 		}
 
@@ -65,13 +60,10 @@ func (o *out) OpenPort(name string) error {
 	//partial match (just take the first)
 	for key, val := range ports {
 		if strings.Contains(key, name) {
-			debugf("open partial match requested=%q matched=%q index=%d", name, key, val)
 			err := o.midiOut.OpenPort(val, "midi-cli")
 			if err != nil {
 				return fmt.Errorf("error opening port %s (%v)", name, val)
 			}
-			o.portName = key
-			debugf("open success port=%q index=%d", key, val)
 			return nil
 		}
 	}
@@ -90,11 +82,11 @@ func (o *out) NoteOn(noteName string, velocity, channel int) error {
 	// data byte 1: 0kkkkkkk note
 	// data byte 2: 0vvvvvvv velocity
 	status := byte(0b10010000 + channel - 1)
-	err = o.sendMessage([]byte{
+	err = o.midiOut.SendMessage([]byte{
 		status,
 		byte(num),
 		byte(velocity),
-	}, "note_on")
+	})
 	if err != nil {
 		return fmt.Errorf("error sending note 'on' message: %w", err)
 	}
@@ -112,11 +104,11 @@ func (o *out) NoteOff(noteName string, velocity, channel int) error {
 	// data byte 1: 0kkkkkkk note
 	// data byte 2: 0vvvvvvv velocity
 	status := byte(0b10000000 + channel - 1)
-	err = o.sendMessage([]byte{
+	err = o.midiOut.SendMessage([]byte{
 		status,
 		byte(num),
 		byte(velocity),
-	}, "note_off")
+	})
 	if err != nil {
 		return fmt.Errorf("error sending note 'off' message: %w", err)
 	}
@@ -128,10 +120,10 @@ func (o *out) ProgramChange(programNumber int, channel int) error {
 	// status byte: 1100nnnn, nnnn = 0-15 for channels 1-16
 	// data byte: 0ppppppp
 	status := byte(0b11000000 + channel - 1)
-	err := o.sendMessage([]byte{
+	err := o.midiOut.SendMessage([]byte{
 		status,
 		byte(programNumber),
-	}, "program_change")
+	})
 	if err != nil {
 		return fmt.Errorf("error sending program change message: %w", err)
 	}
@@ -144,11 +136,11 @@ func (o *out) ControlChange(controllerNumber int, controllerValue int, channel i
 	// data byte 1: 0ccccccc controller number
 	// data byte 2: 0vvvvvvv controller value
 	status := byte(0b10110000 + channel - 1)
-	err := o.sendMessage([]byte{
+	err := o.midiOut.SendMessage([]byte{
 		status,
 		byte(controllerNumber),
 		byte(controllerValue),
-	}, "control_change")
+	})
 	if err != nil {
 		return fmt.Errorf("error sending program change message: %w", err)
 	}
@@ -172,26 +164,10 @@ func (o *out) Panic(channel int) error {
 }
 
 func (o *out) Close() {
-	// debugf("close delaying")
-	// time.Sleep(100 * time.Millisecond)
-	debugf("close port=%q", o.portName)
+	// hammered at this a bit, but tests flaked without the sleep
+	// was never an issue on a faster machine, but worth leaving in
+	time.Sleep(100 * time.Millisecond)
 	_ = o.midiOut.Close()
-}
-
-func (o *out) sendMessage(message []byte, kind string) error {
-	debugf("send start port=%q kind=%s bytes=%v", o.portName, kind, message)
-	err := o.midiOut.SendMessage(message)
-	if err != nil {
-		debugf("send error port=%q kind=%s err=%v", o.portName, kind, err)
-		return err
-	}
-	debugf("send success port=%q kind=%s bytes=%v", o.portName, kind, message)
-	return nil
-}
-
-func debugf(format string, args ...any) {
-	message := fmt.Sprintf(format, args...)
-	_, _ = fmt.Fprintf(os.Stderr, "midi-cli debug %s %s\n", time.Now().Format(time.RFC3339Nano), message)
 }
 
 func (o *out) getPorts() (map[string]int, error) {

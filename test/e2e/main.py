@@ -17,7 +17,6 @@ class TestE2E(unittest.TestCase):
         self.midi_in = rtmidi.MidiIn()
         self.midi_in.set_callback(self.midi_callback)
         self.midi_in.open_virtual_port(self.port_name)
-        # self.validate_port_ready()
 
     def tearDown(self):
         self.midi_in.close_port()
@@ -27,45 +26,12 @@ class TestE2E(unittest.TestCase):
         midi_message = mido.Message.from_bytes(message)
         self.messages.append(midi_message)
 
-    def validate_port_ready(self):
-        midi_out = rtmidi.MidiOut()
-        port_num = midi_out.get_ports().index(self.port_name)
-        midi_out.open_port(port_num)
-        midi_out.send_message([0xC0, 0x7F]) # program change on 1
-        self.wait_for_messages(1, timeout=2.0)
-        midi_out.close_port()
-
-        self.assertEqual(1, len(self.messages))
-
-        self.messages = []
-
-    def wait_for_messages(self, expected: int, timeout: float = 5.0):
-        start = time.time()
-        while len(self.messages) < expected:
-            if time.time() - start >= timeout:
-                break
-            time.sleep(.01)
-        print(f"wait_for_messages: expected={expected}, got={len(self.messages)}, waited={time.time() - start:.3f}s")
-
-    def print_messages(self, label: str):
-        print("----------------------")
-        print(f"{label}: got {len(self.messages)} messages")
-        for index, message in enumerate(self.messages):
-            print(
-                f"{label}[{index}]: type={message.type} channel={message.channel + 1} "
-                f"note={getattr(message, 'note', None)} velocity={getattr(message, 'velocity', None)} "
-                f"control={getattr(message, 'control', None)} value={getattr(message, 'value', None)}"
-            )
-
     def run_go(self, cmd: str):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         go_path = os.path.join(dir_path, "..", "..")
 
         print(f"Running: {cmd}")
-        start = time.time()
         result = subprocess.run(cmd, shell=True, capture_output=True, cwd=go_path)
-        elapsed = time.time() - start
-        print(f"Subprocess completed in {elapsed:.3f}s")
 
         print("Command stdout")
         print(decode(result.stdout))
@@ -88,9 +54,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_messages(1)
-        if len(self.messages) != 1:
-            self.print_messages("note_defaults")
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('note_on', self.messages[0].type)
@@ -104,9 +67,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_messages(1)
-        if len(self.messages) != 1:
-            self.print_messages("note_on")
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('note_on', self.messages[0].type)
@@ -125,7 +85,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_messages(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('program_change', self.messages[0].type)
@@ -142,7 +101,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_messages(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
@@ -160,7 +118,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_messages(1)
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
@@ -178,7 +135,6 @@ class TestE2E(unittest.TestCase):
 
         self.assertEqual(0, result.returncode)
 
-        self.wait_for_messages(16)
         self.assertEqual(16, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
