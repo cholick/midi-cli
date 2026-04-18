@@ -17,6 +17,7 @@ class TestE2E(unittest.TestCase):
         self.midi_in = rtmidi.MidiIn()
         self.midi_in.set_callback(self.midi_callback)
         self.midi_in.open_virtual_port(self.port_name)
+        self.validate_port_ready()
 
     def tearDown(self):
         self.midi_in.close_port()
@@ -25,6 +26,26 @@ class TestE2E(unittest.TestCase):
         message, delta_time = event
         midi_message = mido.Message.from_bytes(message)
         self.messages.append(midi_message)
+
+    def validate_port_ready(self):
+        midi_out = rtmidi.MidiOut()
+        port_num = midi_out.get_ports().index(self.port_name)
+        midi_out.open_port(port_num)
+        midi_out.send_message([0xC0, 0x7F]) # program change on 1
+        self.wait_for_messages(1, timeout=2.0)
+        midi_out.close_port()
+
+        self.assertEqual(1, len(self.messages))
+
+        self.messages = []
+
+    def wait_for_messages(self, expected: int, timeout: float = 5.0):
+        start = time.time()
+        while len(self.messages) < expected:
+            if time.time() - start >= timeout:
+                break
+            time.sleep(.01)
+        print(f"wait_for_messages: expected={expected}, got={len(self.messages)}, waited={time.time() - start:.3f}s")
 
     def run_go(self, cmd: str):
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -42,14 +63,6 @@ class TestE2E(unittest.TestCase):
         print(decode(result.stderr))
 
         return result
-
-    def wait_for_messages(self, expected: int, timeout: float = 5.0):
-        start = time.time()
-        while len(self.messages) < expected:
-            if time.time() - start >= timeout:
-                break
-            time.sleep(.01)
-        print(f"wait_for_messages: expected={expected}, got={len(self.messages)}, waited={time.time() - start:.3f}s")
 
     def test_port_list(self):
         cmd = "go run cmd/midi-cli/main.go -v port list"
