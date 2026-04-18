@@ -47,6 +47,16 @@ class TestE2E(unittest.TestCase):
             time.sleep(.01)
         print(f"wait_for_messages: expected={expected}, got={len(self.messages)}, waited={time.time() - start:.3f}s")
 
+    def print_messages(self, label: str):
+        print("----------------------")
+        print(f"{label}: got {len(self.messages)} messages")
+        for index, message in enumerate(self.messages):
+            print(
+                f"{label}[{index}]: type={message.type} channel={message.channel + 1} "
+                f"note={getattr(message, 'note', None)} velocity={getattr(message, 'velocity', None)} "
+                f"control={getattr(message, 'control', None)} value={getattr(message, 'value', None)}"
+            )
+
     def run_go(self, cmd: str):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         go_path = os.path.join(dir_path, "..", "..")
@@ -79,6 +89,8 @@ class TestE2E(unittest.TestCase):
         self.assertEqual(0, result.returncode)
 
         self.wait_for_messages(1)
+        if len(self.messages) != 1:
+            self.print_messages("note_defaults")
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('note_on', self.messages[0].type)
@@ -93,6 +105,8 @@ class TestE2E(unittest.TestCase):
         self.assertEqual(0, result.returncode)
 
         self.wait_for_messages(1)
+        if len(self.messages) != 1:
+            self.print_messages("note_on")
         self.assertEqual(1, len(self.messages))
 
         self.assertEqual('note_on', self.messages[0].type)
@@ -165,14 +179,6 @@ class TestE2E(unittest.TestCase):
         self.assertEqual(0, result.returncode)
 
         self.wait_for_messages(16)
-        if len(self.messages) != 16:
-            print("----------------------")
-            print(f"panic: got {len(self.messages)} messages")
-            for index, message in enumerate(self.messages):
-                print(
-                    f"panic[{index}]: type={message.type} channel={message.channel + 1} "
-                    f"control={getattr(message, 'control', None)} value={getattr(message, 'value', None)}"
-                )
         self.assertEqual(16, len(self.messages))
 
         self.assertEqual('control_change', self.messages[0].type)
