@@ -53,4 +53,7 @@ jobs:
           cd test/e2e/
           pip install -r requirements.txt
 
-          python -m unittest main.py
+          for i in $(seq 1 10); do
+            echo "E2E iteration ${i}/10"
+            python -m unittest main.py
+          done
