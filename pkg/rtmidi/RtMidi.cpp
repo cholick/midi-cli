@@ -1675,7 +1675,7 @@ void MidiOutCore :: sendMessage( const unsigned char *message, size_t size )
     return;
   }
 
-  MIDITimeStamp timeStamp = AudioGetCurrentHostTime();
+  MIDITimeStamp timeStamp = 0;
   CoreMidiData *data = static_cast<CoreMidiData *> (apiData_);
   OSStatus result;
 
