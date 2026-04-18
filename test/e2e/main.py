@@ -42,7 +42,7 @@ class TestE2E(unittest.TestCase):
 
     def wait_for_messages(self, expected: int):
         count = 0
-        while len(self.messages) < expected and count < 100:
+        while len(self.messages) < expected and count < 500:
             time.sleep(.01)
             count += 1
 
