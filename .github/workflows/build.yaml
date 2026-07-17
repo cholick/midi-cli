@@ -19,13 +19,14 @@ jobs:
         uses: actions/checkout@v7.0.0
 
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v6.5.0
         with:
           go-version: 'stable'
 
       - name: Build
         run: |
-          sudo apt-get install libasound2-dev
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev
           make build
 
       - name: Test
@@ -44,7 +45,7 @@ jobs:
         uses: actions/checkout@v7.0.0
 
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v6.5.0
         with:
           go-version: 'stable'
 
