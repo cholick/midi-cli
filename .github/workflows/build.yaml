@@ -25,7 +25,8 @@ jobs:
 
       - name: Build
         run: |
-          sudo apt-get install libasound2-dev
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev
           make build
 
       - name: Test
